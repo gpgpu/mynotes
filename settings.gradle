@@ -1,1 +1,1 @@
-include 'model', 'infrastructure', 'repository', 'service'
+include 'domain', 'infrastructure', 'repository', 'web'
