@@ -1,10 +1,6 @@
-buildscript{
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.2.RELEASE")
-    }
+allprojects{
+    group = 'org.twstudio'
+    version = '0.1-SNAPSHOT'
 }
 
 subprojects{
@@ -12,9 +8,17 @@ subprojects{
 
     sourceCompatibility=1.8
     targetCompatibility=1.8
+
+    repositories{
+        mavenLocal()
+        mavenCentral()
+    }
 }
 
 task wrapper(type: Wrapper){
     gradleVersion='2.4'
 }
 
+task run(dependsOn: ':web:bootRun'){
+
+}
