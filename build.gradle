@@ -1,6 +1,8 @@
 allprojects{
     group = 'org.twstudio'
     version = '0.1-SNAPSHOT'
+
+    apply plugin: 'idea'
 }
 
 subprojects{
@@ -14,6 +16,8 @@ subprojects{
         mavenCentral()
     }
 }
+
+
 
 task wrapper(type: Wrapper){
     gradleVersion='2.4'

@@ -1,6 +1,6 @@
-package twstudio.infrastructure.filter;
+package twstudio.web.filter;
 
-import org.twstudio.model.Authenticator;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -9,7 +9,8 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import org.twstudio.infrastructure.RefbookHttpHeaderNames;
+import twstudio.web.common.RefbookHttpHeaderNames;
+
 
 @Provider
 @PreMatching
@@ -34,5 +35,7 @@ public class RefbookRequestFilter implements ContainerRequestFilter {
 			if (!authenticator.isAuthTokenValid(token)){
 				requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
 			}
+
+
 	}
 }

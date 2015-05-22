@@ -17,10 +17,11 @@ configurations{
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-jetty")
-    //  compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-jersey")
 //    compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile project(':infrastructure')
+    compile 'org.glassfish.jersey.media:jersey-media-multipart:2.14'
 
 //    runtime("com.h2database:h2:1.4.186")
 

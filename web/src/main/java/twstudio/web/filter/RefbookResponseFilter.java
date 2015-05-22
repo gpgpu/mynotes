@@ -1,4 +1,4 @@
-package twstudio.infrastructure.filter;
+package twstudio.web.filter;
 
 import java.io.IOException;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -6,7 +6,9 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.ext.Provider;
-import org.twstudio.infrastructure.RefbookHttpHeaderNames;
+
+import org.springframework.stereotype.Component;
+import twstudio.web.common.RefbookHttpHeaderNames;
 
 @Provider
 @PreMatching
