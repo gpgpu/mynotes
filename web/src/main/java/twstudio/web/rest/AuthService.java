@@ -29,12 +29,10 @@ public class AuthService {
             String result = "{\"token\": \"" + token + "\"}";
             return getNoCacheResponseBuilder(Response.Status.OK).entity(result).build();
 
-        } catch (final LoginException ex){
+        } catch (final LoginException ex) {
             return getNoCacheResponseBuilder(Response.Status.UNAUTHORIZED)
                     .entity("{\"message\": \"Wrong username or password\"}").build();
         }
-
-
     }
     private Response.ResponseBuilder getNoCacheResponseBuilder(Response.Status status){
         CacheControl cc = new CacheControl();

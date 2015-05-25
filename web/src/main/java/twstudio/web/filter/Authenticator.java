@@ -3,16 +3,22 @@ package twstudio.web.filter;
 /**
  * Created by taowang on 5/22/15.
  */
+import jersey.repackaged.com.google.common.cache.Cache;
+import jersey.repackaged.com.google.common.cache.CacheBuilder;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.TimeUnit;
 import javax.security.auth.login.LoginException;
 
 public class Authenticator {
     private static Authenticator authenticator = null;
     private final Map<String, String> userLookups = new HashMap<String, String>();
-    private final Map<String, String> tokenLookups = new HashMap<String, String>();
+    private final Cache<String, String> tokenLookups = CacheBuilder.newBuilder()
+            .expireAfterAccess(8, TimeUnit.HOURS)
+            .build();
 
 
 
@@ -36,14 +42,15 @@ public class Authenticator {
         throw new LoginException("Login failed");
     }
     public void logout(String authToken) throws GeneralSecurityException{
-        if (tokenLookups.containsKey(authToken)){
-            tokenLookups.remove(authToken);
+        if (tokenLookups.getIfPresent(authToken) != null){
+            tokenLookups.invalidate(authToken);
+
             return;
         }
         throw new GeneralSecurityException("Invalid token");
     }
     public boolean isAuthTokenValid(String token){
-        if (tokenLookups.containsKey(token))
+        if (tokenLookups.getIfPresent(token) != null)
             return true;
         return false;
     }

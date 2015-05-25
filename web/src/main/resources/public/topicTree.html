@@ -1,0 +1,8 @@
+ <div>
+ <div class="topicHandle" ng-click="topic.toggleExpansion()">{{topic.handleIndicator()}}</div>
+     <div ng-click="select(topic)" ng-class="{selectedTopic: topic.isSelected, topicText: !(topic.isSelected)}" >{{topic.title}}</div>
+     <div class="clearFix"></div>
+     <div  ng-show="topic.expanded">
+     <div id="{{topic.id}}" data-type="topic" class="topic" ng-repeat="topic in topic.topics"  ng-include="'topicTree.html'" droppable-topic></div>
+     </div>
+  </div>   

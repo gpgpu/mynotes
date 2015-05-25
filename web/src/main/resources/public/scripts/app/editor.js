@@ -22,6 +22,18 @@ function ApplyBlockStyle(styleName) {
 function editStyle(cmd) {
     document.execCommand(cmd, null, null);
 }
+function formatCode(codeStyle){
+	var sel = window.getSelection();;
+	var range = sel.getRangeAt(0);
+	var contents = sel.toString().replace('<', '&lt;').replace('>', '&gt;');
+	console.log(contents);
+	var theElement = document.createElement("pre");
+	theElement.innerHTML = contents;
+	range.deleteContents();
+	range.insertNode(theElement);
+	sel.removeAllRanges();
+	sel.addRange(range);
+}
 
 function insertTag(tagName) {
 

@@ -187,6 +187,8 @@ function manager($scope, $http, $timeout, $window) {
                 $scope.portals.push(portal);
                 $scope.portalHash[portal.id] = portal;
             }
+        }).error(function(data, status, headers, config){
+            location.href = 'index.html'
         });
 
         
@@ -286,7 +288,7 @@ function manager($scope, $http, $timeout, $window) {
             });
 
             $http.put('rest/portal/displayOrder', para, httpConfig).success(function (data) {
-                alert(data);
+
             	$scope.itemSorted = false;
                 $scope.selectedItem.topics.sort(function (a, b) {
                     return a.displayOrder - b.displayOrder;

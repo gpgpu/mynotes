@@ -1,4 +1,4 @@
-package twstudio.web;
+package twstudio.web.config;
 
 /**
  * Created by Tao on 5/21/2015.

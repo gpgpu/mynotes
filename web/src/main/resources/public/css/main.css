@@ -59,11 +59,12 @@ body{
     width: 874px;
     position: relative;
     padding: 3px;
-    background-color: #6699FF;
+
+    background-color: rgba(165, 197, 165, 0.58);
     text-align: left;
     font-size: 1.2em;
     font-weight: bold;
-    color: #CCFF99;
+    color: #250308;
 }
 
 
@@ -73,7 +74,7 @@ body{
     width: 874px;
     position: relative;
     padding: 3px;
-    background-color: #C0C0C0;
+    background-color: #333333;
     text-align: right;
 }
 #commandBar {
@@ -81,7 +82,7 @@ body{
     width: 874px;
     position: relative;
     padding: 3px;
-    background-color: #FFFFCC;
+    background-color: seagreen;
     text-align: right;
     /*display: none;*/
 }
@@ -92,7 +93,7 @@ body{
     height: 800px;
     overflow: scroll;
     padding-top: 12px;
-    background-color: rgba(165, 197, 165, 0.58)
+    background-color: #666666;
 }
 #rightPanel
 {
@@ -102,19 +103,16 @@ body{
     height: 800px;
     overflow: scroll;
     padding-top: 12px;
-    /*background-image: url(../images/bookbg.png);
-            background-size: 100% 100%;
-            background-repeat: no-repeat;*/
-    /*background-image: url(../images/flower.png);
-    background-position: right bottom;
-    background-repeat: no-repeat;
-    background-color: rgb(0, 0, 0);*/
+
+    background-color: #666666;
+ /*
     background-image: linear-gradient(bottom, rgb(58,53,66) 35%, rgb(138,62,75) 60%);
     background-image: -o-linear-gradient(bottom, rgb(58,53,66) 35%, rgb(138,62,75) 60%);
     background-image: -moz-linear-gradient(bottom, rgb(58,53,66) 35%, rgb(138,62,75) 60%);
     background-image: -webkit-linear-gradient(bottom, rgb(58,53,66) 35%, rgb(138,62,75) 60%);
     background-image: -ms-linear-gradient(bottom, rgb(58,53,66) 35%, rgb(138,62,75) 60%);
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.35, rgb(58,53,66)), color-stop(0.6, rgb(138,62,75)));
+*/
 }
 
 .articleRow
@@ -210,10 +208,10 @@ body{
        
 
 .portal {
-    background-color: #008080;
+    background-color: #00CC66;
     font-weight: bold;
-    color: #FFFF00;
-    border: 1px solid #b6ff00;
+    color:#000000;
+    border: thin inset #666666;
     margin: 0px 0px 5px 5px;
     padding: 2px;
 

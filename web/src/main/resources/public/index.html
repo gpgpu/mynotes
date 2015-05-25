@@ -1,60 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Reference Book</title>
-    <link rel="stylesheet" type="text/css" href="css/main.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-    <script type="text/javascript" src="scripts/lib/jquery-2.1.1.min.js"></script>
+<title>refbook</title>
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+<script type="text/javascript" src="scripts/lib/jquery-2.1.1.min.js"></script>
 </head>
 <body>
-<div id="divTitle">
-    <h1>The Complete Reference Book</h1>
-    <div id="divLogin">
-        <table>
-            <tr>
-                <td class="text">User Name:</td><td><input id="tbxUserName" name="username" type="text" style="width:100px;" /></td>
-            </tr>
-            <tr>
-                <td class="text">Password: </td><td><input id="tbxPassword" name="password" type="password" style="width:100px;" /></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td><td><input id="btnSubmit" type="button" value="Sign In" /></td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <span class="warning" id="errorMessage"></span>
-                </td>
-            </tr>
-        </table>
-    </div>
+ <div id="divTitle">
+<h1>The Complete Reference Book</h1>
+<div id="divLogin">
+ <table>
+ <tr>
+    <td class="text">User Name:</td><td><input id="tbxUserName" name="username" type="text" style="width:100px;" /></td>
+ </tr>
+ <tr>
+    <td class="text">Password: </td><td><input id="tbxPassword" name="password" type="password" style="width:100px;" /></td>
+ </tr>
+ <tr>
+    <td>&nbsp;</td><td><input id="btnSubmit" type="button" value="Sign In" /></td>
+ </tr>
+ <tr>
+ 	<td colspan="2">
+ 		<span class="warning" id="errorMessage"></span>
+ 	</td>
+ </tr>
+ </table>
+</div>
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function(){
-        $("body").on('click', "#btnSubmit", function(){
-            $.ajax({
-                cache: false,
-                dataType: "json",
-                url: "/rest/login",
-                type: "POST",
-                data: {
-                    "username": $("#tbxUserName").val(),
-                    "password": $("#tbxPassword").val()
-                },
-                success: function(data, status, xhr){
-                    //	$("#errorMessage").text(data.token);
-                    sessionStorage.token = data.token;
-                    window.location.href="/manager.html";
-                },
-                error: function(xhr, status, error){
-                    var message = xhr.responseJSON;
-                    $("#errorMessage").text(message.message);
-                }
-            });
-        })
+	$(document).ready(function(){
+		$("#tbxUserName").focus();
+		$("#divLogin").keyup(function(event){
 
-    });
+			if (event.keyCode == 13){
+				$("#btnSubmit").click();
+			}
+		});
+		$("body").on('click', "#btnSubmit", function(){
+			$.ajax({
+				cache: false,
+				dataType: "json",
+				url: "/rest/login",
+				type: "POST",
+				data: {
+					"username": $("#tbxUserName").val(),
+					"password": $("#tbxPassword").val()
+				},
+				success: function(data, status, xhr){
+				//	$("#errorMessage").text(data.token);
+					sessionStorage.token = data.token;
+					window.location.href="/manager.html";
+				},
+				error: function(xhr, status, error){
+					var message = xhr.responseJSON;
+					$("#errorMessage").text(message.message);
+				}
+			});
+		})
 
+		
+	});
 </script>
 </body>
 </html>
