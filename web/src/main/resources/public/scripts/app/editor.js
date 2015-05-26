@@ -25,7 +25,7 @@ function editStyle(cmd) {
 function formatCode(codeStyle){
 	var sel = window.getSelection();;
 	var range = sel.getRangeAt(0);
-	var contents = sel.toString().replace('<', '&lt;').replace('>', '&gt;');
+	var contents = sel.toString().replace(/</g, '&lt;').replace(/>/g, '&gt;');
 	console.log(contents);
 	var theElement = document.createElement("pre");
 	theElement.innerHTML = contents;
@@ -142,4 +142,3 @@ function isBlockNode(node){
 
     return name == "P" || name == "DIV" || name == "BODY" || name == "H1" || name == "H2" || name == "H3" || name == "PRE";
 };
-
