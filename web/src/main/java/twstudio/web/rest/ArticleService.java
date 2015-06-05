@@ -1,28 +1,24 @@
 package twstudio.web.rest;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Logger;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.inject.Inject;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.spi.LoggerFactory;
+
+import org.eclipse.jetty.util.log.Log;
 import twstudio.domain.Article;
 import twstudio.domain.ArticleRepo;
 
 @Path("article")
 public class ArticleService {
     @Inject ArticleRepo articleRepo;
-
+    private Logger logger = Logger.getLogger("ha");
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -45,9 +41,22 @@ public class ArticleService {
     }
     @PUT
     @Path("content")
-    public String saveContent(Article article){
+    @Produces("application/json")
+    public Response saveContent(Article article){
+        // check if there are updates after the record was retrieved.
+        Article serverVersion = articleRepo.getArticle(article.getId());
+
+        long clientTimeStamp = article.getModifiedOn().getTime();
+        long serverTimeStamp = serverVersion.getModifiedOn().getTime();
+        System.out.println("client: server timestamp: "  + clientTimeStamp + " : " + serverTimeStamp);
+        if (serverTimeStamp > clientTimeStamp)
+            return Response.status(Response.Status.NO_CONTENT).build();
+
+        // if no conflict, then set new timestamp and update
+        Date newModifiedOn = new Date();
+        article.setModifiedOn(newModifiedOn);
         articleRepo.saveContent(article);
-        return "OK";
+        return Response.status(Response.Status.OK).entity(newModifiedOn).build();
     }
 
     @PUT
@@ -55,5 +64,28 @@ public class ArticleService {
     public String changeParent(Article article){
         articleRepo.changeParent(article);
         return "OK";
+    }
+
+    @POST
+    @Path("sync")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getLatest(@FormParam("articleId") int articleId, @FormParam("modifiedOn") long modifiedOn){
+
+    //    Date clientModifiedOn = new Date(modifiedOn);
+        Article article = articleRepo.getArticle(articleId);
+
+        long serverTotalSeconds = article.getModifiedOn().getTime();
+
+        System.out.println("clientModifiedOn:" + modifiedOn);
+        System.out.println("serverModifiedOn:" + serverTotalSeconds);
+
+        boolean hasNewVersion = serverTotalSeconds > modifiedOn;
+
+
+
+       if (hasNewVersion)
+           return Response.status(Response.Status.OK).entity(article).build();
+
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 }

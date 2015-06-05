@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import twstudio.domain.*;
 import twstudio.infrastructure.repoImpl.ArticleRepoImpl;
 import twstudio.infrastructure.repoImpl.ExternalFileRepoImpl;
@@ -21,6 +22,7 @@ import javax.sql.DataSource;
  */
 
 @Configuration
+@EnableTransactionManagement
 public class InfrastructureConfig {
     @Bean
     @Profile("dev")

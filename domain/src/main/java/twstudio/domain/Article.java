@@ -1,11 +1,14 @@
 package twstudio.domain;
 
+import java.util.Date;
+
 public class Article {
 	private int id;
 	private int topicId;
 	private String name;
 	private String content;
 	private int displayOrder;
+	private Date modifiedOn;
 	
 	public int getId() {
 		return id;
@@ -37,6 +40,12 @@ public class Article {
 	public void setDisplayOrder(int displayOrder) {
 		this.displayOrder = displayOrder;
 	}
-	
-	
+
+	public Date getModifiedOn() {
+		return modifiedOn;
+	}
+
+	public void setModifiedOn(Date modifiedOn) {
+		this.modifiedOn = modifiedOn;
+	}
 }

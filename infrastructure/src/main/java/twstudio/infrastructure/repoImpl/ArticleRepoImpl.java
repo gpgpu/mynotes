@@ -36,7 +36,7 @@ public class ArticleRepoImpl implements ArticleRepo {
 
     @Override
     public Article getArticle(int id) {
-        String sql = "SELECT articles.id, articles.name, article_contents.article_content FROM articles join article_contents ON articles.id=article_contents.id WHERE articles.id=:id";
+        String sql = "SELECT articles.id, articles.name, article_contents.article_content, modified_on FROM articles join article_contents ON articles.id=article_contents.id WHERE articles.id=:id";
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", id);
         return jdbcTemplate.queryForObject(sql, param, articleContentRowMapper);
@@ -53,6 +53,7 @@ public class ArticleRepoImpl implements ArticleRepo {
         statement.setString(2, article.getName());
         statement.setInt(3, article.getTopicId());
         statement.setInt(4, article.getDisplayOrder());
+
 
         statement.execute();
         int newId = statement.getInt(1);
@@ -73,9 +74,10 @@ public class ArticleRepoImpl implements ArticleRepo {
 
     @Override
     public void saveContent(Article article) {
-        String sql = "UPDATE article_contents SET article_content=:content WHERE id=:id";
+        String sql = "UPDATE article_contents SET article_content=:content, modified_on=:modified_on WHERE id=:id";
         SqlParameterSource paramSource = new MapSqlParameterSource()
                 .addValue("content", article.getContent())
+                .addValue("modified_on", article.getModifiedOn())
                 .addValue("id", article.getId());
 
         jdbcTemplate.update(sql, paramSource);
