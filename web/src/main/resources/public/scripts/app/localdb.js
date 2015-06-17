@@ -1,26 +1,41 @@
- alert('I am here');
+var app = app || {};
 
+app.localdb = (function(){
     if (!window.indexedDB){
         alert("indexedDB not avaliable")
     }
-    else{
-        alert("db is ok")
+    var db;
+    var request = window.indexedDB.open("mynotes", 1);
+    request.onerror = function(event){
+        alert("oops");
+    };
+    request.onsuccess = function(event){
+        db = event.target.result;
     }
+    request.onupgradeneeded = function(event){
+        var db = event.target.result;
+        var objectStore = db.createObjectStore("articles", {keyPath: "id"});
+    };
 
-var request = window.indexedDB.open("mynotes", 1);
+    var getArticle = function(id){
+        var transaction = db.transaction("articles", "readonly");
+        var store = transaction.objectStore("articles");
+        var req = store.get(id);
 
-request.onerror = function(event){
-    alert("oops");
-};
-request.onsuccess = function(event){
+        req.onsuccess = function(event){
+        };
+        req.onerror = function(event){
+        };
 
-}
-request.onupgradeneeded = function(event){
-    var db = event.target.result;
-    var objectStore = db.createObjectStore("articles", {keyPath: "id"});
+    };
 
-    objectStore.transaction.oncomplete = function(event){
-        var articleObjectStore = db.transaction("articles", "readwrite").objectStore("articles");
-        articleObjectStore.add({"id": 1, "content": "fuck"});
-    }
-};
+    return {
+        getARticle: getArticle
+    };
+
+}());
+
+
+
+
+
