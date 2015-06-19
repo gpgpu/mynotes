@@ -1,5 +1,10 @@
 var app = app || {};
 
+app.status = {
+    ok: 1,
+    notfound: 2
+}
+
 app.localdb = (function(){
     if (!window.indexedDB){
         alert("indexedDB not avaliable")
@@ -22,15 +27,38 @@ app.localdb = (function(){
         var store = transaction.objectStore("articles");
         var req = store.get(id);
 
+        var result;
         req.onsuccess = function(event){
+            result = {
+                status: app.status.ok,
+                entity: request.result
+            }
         };
         req.onerror = function(event){
+            result = {
+                status: app.status.notfound,
+                message: "not found"
+            }
         };
-
+        return result;
     };
 
+    var saveArticle = function(article){
+        var localCopy = getArticle(article.id);
+
+        var store = db.transaction("articles", "readwrite").objectStore("articles");
+        if (localCopy.status === app.status.ok){
+            localCopy.content = article.content;
+            var requestUpdate = store.put(localCopy);
+        }
+        else{
+            store.add(article);
+        }
+    }
+
     return {
-        getARticle: getArticle
+        getArticle: getArticle,
+        saveArticle: saveArticle
     };
 
 }());
