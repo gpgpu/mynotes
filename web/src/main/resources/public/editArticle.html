@@ -100,10 +100,9 @@ Columns: <input type="text" id="tbxTableColumns" />&nbsp;&nbsp;&nbsp;Rows: <inpu
         $("#contentArea").html(unescape(rawContents));
      });
 
-     var localdb = app.localdb;
-     var localCopy = localdb.getArticle(articleId);
 
-        if (localCopy.status === app.status.ok){
+        var localCopy =  app.localdb.getArticle(articleId);
+        if (localCopy && localCopy.status === app.status.ok){
             var localArticle = localCopy.entity;
             document.title = localArticle.name;
             $("#articleName").text(localArticle.name);
