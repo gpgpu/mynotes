@@ -100,18 +100,17 @@ Columns: <input type="text" id="tbxTableColumns" />&nbsp;&nbsp;&nbsp;Rows: <inpu
         $("#contentArea").html(unescape(rawContents));
      });
 
-
-        var localCopy =  app.localdb.getArticle(articleId);
-        if (localCopy && localCopy.status === app.status.ok){
-            var localArticle = localCopy.entity;
-            document.title = localArticle.name;
-            $("#articleName").text(localArticle.name);
-            $("#contentArea").html(localArticle.content);
-            if($("#contentArea").html() == ""){
+     app.localdb.openDb(function(db){
+        app.localdb.getArticle(articleId, function(article){
+            if (article.status === app.status.ok){
+             document.title = article.entity.name;
+             $("#articleName").text(article.entity.name);
+               $("#contentArea").html(article.entity.content);
+               if($("#contentArea").html() == ""){
                 $("#contentArea").html("<p>a</p><p></p>");
+              }
             }
-        }
-        else{
+          else{
             var url = "rest/article/" + articleId;
 
             $.ajax({
@@ -125,10 +124,11 @@ Columns: <input type="text" id="tbxTableColumns" />&nbsp;&nbsp;&nbsp;Rows: <inpu
                 if($("#contentArea").html() == ""){
                     $("#contentArea").html("<p>a</p><p></p>");
                 }
+                app.localdb.addArticle(data);
             });
-        }
-     
-
+            }
+        });
+     });
 
         $("#diaChangeHeight").dialog({
             autoOpen: false,
