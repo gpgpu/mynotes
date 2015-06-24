@@ -14,6 +14,7 @@ public class ArticleContentRowMapper implements RowMapper<Article> {
         article.setId(rs.getInt(1));
         article.setName(rs.getString(2));
         article.setContent(rs.getString(3));
+        article.setModifiedOn(rs.getTimestamp(4));
         return article;
     }
 }

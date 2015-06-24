@@ -3,6 +3,8 @@ package twstudio.web.rest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
@@ -50,5 +52,12 @@ public class FileService {
         theFile.setContent(bytes);
 
         return repo.saveFile(theFile);
+    }
+
+    @GET
+    @Path("unsecured/timezone")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Date getTime(){
+        return new Date();
     }
 }

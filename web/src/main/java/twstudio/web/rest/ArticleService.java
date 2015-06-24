@@ -1,10 +1,7 @@
 package twstudio.web.rest;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -55,5 +52,16 @@ public class ArticleService {
     public String changeParent(Article article){
         articleRepo.changeParent(article);
         return "OK";
+    }
+
+    @POST
+    @Path("sync")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getLatest(int articleId, Date modifiedOn){
+        Article article = articleRepo.getArticle(articleId);
+
+        int compareResult = article.getModifiedOn().compareTo(modifiedOn);
+
+        return Response.status(Response.Status.NO_CONTENT).entity("article").build();
     }
 }

@@ -113,38 +113,30 @@ app.status = {
         readWriteStore.add(article);
     }
 
-    /**
-     * @param {string} biblioid
-     * @param {string} title
-     * @param {number} year
-     * @param {Blob=} blob
-     */
-    function addPublication(biblioid, title, year, blob) {
-        console.log("addPublication arguments:", arguments);
-        var obj = { biblioid: biblioid, title: title, year: year };
-        if (typeof blob != 'undefined')
-            obj.blob = blob;
+     var updateArticle = function(article){
+        console.log("updateArticle...");
+        if (typeof readWriteStore == 'undefined')
+            readWriteStore = getObjectStore(DB_STORE_NAME, 'readwrite');
 
-        var store = getObjectStore(DB_STORE_NAME, 'readwrite');
-        var req;
-        try {
-            req = store.add(obj);
-        } catch (e) {
-            if (e.name == 'DataCloneError')
-                displayActionFailure("This engine doesn't know how to clone a Blob, " +
-                "use Firefox");
-            throw e;
-        }
-        req.onsuccess = function (evt) {
-            console.log("Insertion in DB successful");
-            displayActionSuccess();
-            displayPubList(store);
+        var req = readWriteStore.get(article.id);
+
+        req.onerror = function(event){
+            console.log("couldn't find the record in localdb");
         };
-        req.onerror = function() {
-            console.error("addPublication error", this.error);
-            displayActionFailure(this.error);
+        req.onsuccess = function(event){
+            var dbRecord = req.result;
+
+            dbRecord.content = article.content;
+
+            var reqUpdate = readWriteStore.put(dbRecord);
+            reqUpdate.onerror = function(event){
+                console.log("could not update record");
+            };
+            reqUpdate.onsuccess = function(event){
+                console.log("record updated");
+            };
         };
-    }
+     };
 
     /**
      * @param {string} biblioid
