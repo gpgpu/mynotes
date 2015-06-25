@@ -21,38 +21,41 @@
 
 <div id="editorContainer">
 <div id="ribbon">
-<input type="button" id="btnBold" value="B" />
-<input type="button" id="btnUnderline" value="U" />
-<input type="button" id="btnItalize" value="I" />
-<select id="paragraph">
-	<option value='-'>- Paragraph -</option>
-	<option value='heading1' class='bold'>Heading 1</option>
-	<option value='heading2' class='bold'>Heading 2</option>
-	<option value='heading3' class='bold'>Heading 3</option>
-	<option value='heading4' class='bold'>Heading 4</option>
-	<option value='normal' class='bold'>Normal</option>
-</select>
+	<input type="button" id="btnBold" value="B" />
+	<input type="button" id="btnUnderline" value="U" />
+	<input type="button" id="btnItalize" value="I" />
+	<select id="paragraph">
+		<option value='-'>- Paragraph -</option>
+		<option value='heading1' class='bold'>Heading 1</option>
+		<option value='heading2' class='bold'>Heading 2</option>
+		<option value='heading3' class='bold'>Heading 3</option>
+		<option value='heading4' class='bold'>Heading 4</option>
+		<option value='normal' class='bold'>Normal</option>
+	</select>
 
-<input type="button" id="btnUl" value="ul" />
-<input type="button" id="btnOl" value="ol" />
-<input type="button" id="btnTable" value="Table" />
-<input type="button" id="btnOpenImageDialog" value="Image" />
-<select id='coding'>
-	<option value='-'>- Coding Style -</option>
-	<option value='code' class="bold">Code</option>
-	<option value='badCode' class='bold'>Bad Code</option>
-	<option value='script' class="bold">Script</option>
-</select>
+	<input type="button" id="btnUl" value="ul" />
+	<input type="button" id="btnOl" value="ol" />
+	<input type="button" id="btnTable" value="Table" />
+	<input type="button" id="btnOpenImageDialog" value="Image" />
+	<select id='coding'>
+		<option value='-'>- Coding Style -</option>
+		<option value='code' class="bold">Code</option>
+		<option value='badCode' class='bold'>Bad Code</option>
+		<option value='script' class="bold">Script</option>
+	</select>
+	<input type="button" id="btnHTML" value="HTML" onclick="btnHTML_Click()" />
+	<input type="button" id="btnText" value="Text" onclick="btnText_Click()" />
 </div>
 
 <div>
 	<input type="button" id="btnSaveContent" value="Save" />
-	<input type="button" id="btnHTML" value="HTML" onclick="btnHTML_Click()" />
-	<input type="button" id="btnText" value="Text" onclick="btnText_Click()" />
-	<input type="button" id="btnClear" value="Clear" onclick="btnClear_Click()" />
-	<input type="button" id="btnShowHeightDialog" value="Change Height" onclick="btnShowHeightDialog_Click()" />
-	<input type="button" id="btnGetLatest" value="Get Latest" />
 
+	<!--<input type="button" id="btnClear" value="Clear" onclick="btnClear_Click()" />
+	<input type="button" id="btnShowHeightDialog" value="Change Height" onclick="btnShowHeightDialog_Click()" /> -->
+	<input type="button" id="btnGetLatest" value="Get Latest" />
+	<input type="button" id="btnUnescape" value="unescape" />
+	<input type="button" id="btnShowServerVersion" value="Show Server version" />
+	<input type="button" id="btnForceUpdate" value="Force Update" />
 	<span id="saveIndicator"></span>
 </div>
 <div id="contentArea" contenteditable="true">

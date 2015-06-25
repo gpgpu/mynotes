@@ -113,10 +113,10 @@ app.status = {
         readWriteStore.add(article);
     }
 
-     var updateArticle = function(article){
+     var updateArticle = function(article, callback){
         console.log("updateArticle...");
-        if (typeof readWriteStore == 'undefined')
-            readWriteStore = getObjectStore(DB_STORE_NAME, 'readwrite');
+
+        var readWriteStore = getObjectStore(DB_STORE_NAME, 'readwrite');
 
         var req = readWriteStore.get(article.id);
 
@@ -124,16 +124,17 @@ app.status = {
             console.log("couldn't find the record in localdb");
         };
         req.onsuccess = function(event){
-            var dbRecord = req.result;
+        //    var dbRecord = req.result;
 
-            dbRecord.content = article.content;
+        //    dbRecord.content = article.content;
 
-            var reqUpdate = readWriteStore.put(dbRecord);
+            var reqUpdate = readWriteStore.put(article);
             reqUpdate.onerror = function(event){
                 console.log("could not update record");
             };
             reqUpdate.onsuccess = function(event){
                 console.log("record updated");
+                callback();
             };
         };
      };
@@ -203,7 +204,8 @@ app.status = {
     return {
         openDb: openDb,
         getArticle: getArticle,
-        addArticle: addArticle
+        addArticle: addArticle,
+        updateArticle: updateArticle
     }
 
 })(); // Immediately-Invoked Function Expression (IIFE)

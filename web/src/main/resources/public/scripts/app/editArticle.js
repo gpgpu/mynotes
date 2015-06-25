@@ -35,7 +35,7 @@ var httpConfig = {headers:{
                 type: 'GET'
             }).done(function(data){
                 document.title = data.name;
-                nsArlastModified.modifiedOn = data.modifiedOn;
+                nsEditArticle.modifiedOn = data.modifiedOn;
                 $("#articleName").text(data.name);
                 $("#contentArea").html(data.content);
                 if($("#contentArea").html() == ""){
@@ -43,7 +43,7 @@ var httpConfig = {headers:{
                 }
                 app.localdb.addArticle(data);
             });
-            }
+          }
         });
      });
 
@@ -51,8 +51,13 @@ $("#btnGetLatest").click(function(){
    var param = {};
     param.articleId = nsEditArticle.articleId;
     param.modifiedOn = nsEditArticle.modifiedOn;
-    alert(param.modifiedOn);
+
     var destinationURL = "rest/article/sync"
+
+    var imageUrl = "<img src='images/busy_indicator.gif' alt='busy' style='width:16px; height:16px' />";
+
+    $('#saveIndicator').html(imageUrl);
+    $('#saveIndicator').show();
 
     $.ajax({
         url: destinationURL,
@@ -60,8 +65,19 @@ $("#btnGetLatest").click(function(){
         type: 'POST',
         data: param
     }).done(function(data, status){
-        alert(data);
-        alert(status.code);
+        if (status == "nocontent"){
+            $('#saveIndicator').html("<span style='color:green;'>No update needed</span>").fadeOut(3000);
+        }
+        else if (status == "success"){
+            app.localdb.updateArticle(data, function(){
+                nsEditArticle.modifiedOn = data.modifiedOn;
+                 $("#contentArea").html(data.content);
+                if($("#contentArea").html() == ""){
+                    $("#contentArea").html("<p>a</p><p></p>");
+                }
+                $('#saveIndicator').html("<span style='color:green;'>Updated!</span>").fadeOut(3000);
+            })
+        }
 
     });
 });
@@ -260,6 +276,7 @@ $("#btnGetLatest").click(function(){
                      var para = {};
                      para.id = nsEditArticle.articleId;
                      para.content = $("#contentArea").html();
+                     para.modifiedOn = nsEditArticle.modifiedOn;
 
                      $.ajax({
                          type: "PUT",
@@ -288,6 +305,28 @@ $("#btnGetLatest").click(function(){
                  $(document).on("click", "#btnClear", function(){
                      if (confirm("All contents will be discarded, continue?"))
                          $("#contentArea").html('<p>a</p><p></p>');
+                 });
+                 $(document).on("click", "#btnShowServerVersion", function(event){
+                    event.preventDefault();
+                    var newWindow = window.open("newWindow.html", "popupWindow", "width=1200,height=800,scrollbars=yes");
+
+                    newWindow.onload = function(){
+                        var url = "rest/article/" + nsEditArticle.articleId;
+
+                        $.ajax({
+                            url: url,
+                            headers: { 'x-auth-token': sessionStorage.token },
+                            type: 'GET'
+                        }).done(function(data){
+                            newWindow.dataFromServer = data.content;
+                            newWindow.init();
+                        });
+
+
+                    };
+
+
+
                  });
          }
     function replaceSelectedText(replacementText) {

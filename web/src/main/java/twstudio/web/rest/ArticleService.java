@@ -36,6 +36,14 @@ public class ArticleService {
     @PUT
     @Path("title")
     public String updateTitle(Article article){
+        // add timestamp
+        article.setModifiedOn(new Date());
+
+        // check if there are updates after the record was retrieved.
+        Article serverVersion = articleRepo.getArticle(article.getId());
+
+
+
         articleRepo.updateTitle(article);
         return "OK";
     }
@@ -56,17 +64,23 @@ public class ArticleService {
     @POST
     @Path("sync")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getLatest(@FormParam("articleId") int articleId, @FormParam("modifiedOn") Date modifiedOn){
-        logger.info("getLatest...");
-        logger.info("articleId: " + articleId);
-        logger.info("modifiedOn: "  + modifiedOn);
+    public Response getLatest(@FormParam("articleId") int articleId, @FormParam("modifiedOn") long modifiedOn){
+
+    //    Date clientModifiedOn = new Date(modifiedOn);
         Article article = articleRepo.getArticle(articleId);
 
-        int compareResult = article.getModifiedOn().compareTo(modifiedOn);
+        long serverTotalSeconds = article.getModifiedOn().getTime();
 
-        if (compareResult <= 0) // if it's the same or even older
-            return Response.status(Response.Status.NO_CONTENT).build();
+        System.out.println("clientModifiedOn:" + modifiedOn);
+        System.out.println("serverModifiedOn:" + serverTotalSeconds);
 
-        return Response.status(Response.Status.OK).entity(article).build();
+        boolean hasNewVersion = serverTotalSeconds > modifiedOn;
+
+
+
+       if (hasNewVersion)
+           return Response.status(Response.Status.OK).entity(article).build();
+
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 }
