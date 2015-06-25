@@ -3,9 +3,9 @@ var nsEditArticle = nsEditArticle || {};
 
 
 
-var articleId = window.opener.targetArticleId;
-var isLocalNew = false;
-var lastModified;
+nsEditArticle.articleId = window.opener.targetArticleId;
+nsEditArticle.isLocalNew = false;
+nsEditArticle.modifiedOn;
 
 var httpConfig = {headers:{
    'x-auth-token': sessionStorage.token
@@ -16,10 +16,10 @@ var httpConfig = {headers:{
      setEventListners();
 
      app.localdb.openDb(function(db){
-        app.localdb.getArticle(articleId, function(article){
+        app.localdb.getArticle(nsEditArticle.articleId, function(article){
             if (article.status === app.status.ok){
              document.title = article.entity.name;
-             lastModified = article.modifiedOn;
+             nsEditArticle.modifiedOn = article.entity.modifiedOn;
              $("#articleName").text(article.entity.name);
                $("#contentArea").html(article.entity.content);
                if($("#contentArea").html() == ""){
@@ -27,7 +27,7 @@ var httpConfig = {headers:{
               }
             }
           else{
-            var url = "rest/article/" + articleId;
+            var url = "rest/article/" + nsEditArticle.articleId;
 
             $.ajax({
                 url: url,
@@ -35,7 +35,7 @@ var httpConfig = {headers:{
                 type: 'GET'
             }).done(function(data){
                 document.title = data.name;
-                lastModified = data.modifiedOn;
+                nsArlastModified.modifiedOn = data.modifiedOn;
                 $("#articleName").text(data.name);
                 $("#contentArea").html(data.content);
                 if($("#contentArea").html() == ""){
@@ -46,6 +46,25 @@ var httpConfig = {headers:{
             }
         });
      });
+
+$("#btnGetLatest").click(function(){
+   var param = {};
+    param.articleId = nsEditArticle.articleId;
+    param.modifiedOn = nsEditArticle.modifiedOn;
+    alert(param.modifiedOn);
+    var destinationURL = "rest/article/sync"
+
+    $.ajax({
+        url: destinationURL,
+        headers: { 'x-auth-token': sessionStorage.token },
+        type: 'POST',
+        data: param
+    }).done(function(data, status){
+        alert(data);
+        alert(status.code);
+
+    });
+});
 
         $("#diaChangeHeight").dialog({
             autoOpen: false,
@@ -175,7 +194,7 @@ var httpConfig = {headers:{
                      request.setRequestHeader("X-File-Name", theFile.name);
                      request.setRequestHeader("X-File-Size", theFile.size);
                      request.setRequestHeader("X-File-Type", theFile.type);
-                     request.setRequestHeader("X-File-ArticleId", articleId);
+                     request.setRequestHeader("X-File-ArticleId", nsEditArticle.articleId);
                      request.setRequestHeader("x-auth-token", sessionStorage.token);
 
                      request.onreadystatechange = function () { // Simple event handler
@@ -239,7 +258,7 @@ var httpConfig = {headers:{
                      $('#saveIndicator').show();
 
                      var para = {};
-                     para.id = articleId;
+                     para.id = nsEditArticle.articleId;
                      para.content = $("#contentArea").html();
 
                      $.ajax({
