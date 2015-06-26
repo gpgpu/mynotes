@@ -21,7 +21,7 @@ var httpConfig = {headers:{
             if (article.status === app.status.ok){
              document.title = article.entity.name;
              nsEditArticle.modifiedOn = article.entity.modifiedOn;
-             nsEditArticle.locallyModified = article.entity.locallyModified;
+             nsEditArticle.locallyModified = article.entity.locallyModified || false;
              $("#articleName").text(article.entity.name);
                $("#contentArea").html(article.entity.content);
                if($("#contentArea").html() == ""){
@@ -369,6 +369,7 @@ var httpConfig = {headers:{
                     app.localdb.getArticle(nsEditArticle.articleId, function(article){
                         article.entity.modifiedOn = response;
                         article.entity.locallyModified = false;
+                        article.entity.content = para.content;
                         nsEditArticle.modifiedOn = response;
                         nsEditArticle.locallyModified = false;
                         app.localdb.updateArticle(article.entity, function(){
