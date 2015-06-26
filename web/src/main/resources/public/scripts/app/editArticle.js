@@ -6,6 +6,7 @@ var nsEditArticle = nsEditArticle || {};
 nsEditArticle.articleId = window.opener.targetArticleId;
 nsEditArticle.isLocalNew = false;
 nsEditArticle.modifiedOn;
+nsEditArticle.locallyModified = false;
 
 var httpConfig = {headers:{
    'x-auth-token': sessionStorage.token
@@ -20,6 +21,7 @@ var httpConfig = {headers:{
             if (article.status === app.status.ok){
              document.title = article.entity.name;
              nsEditArticle.modifiedOn = article.entity.modifiedOn;
+             nsEditArticle.locallyModified = article.entity.locallyModified;
              $("#articleName").text(article.entity.name);
                $("#contentArea").html(article.entity.content);
                if($("#contentArea").html() == ""){
@@ -46,41 +48,6 @@ var httpConfig = {headers:{
           }
         });
      });
-
-$("#btnGetLatest").click(function(){
-   var param = {};
-    param.articleId = nsEditArticle.articleId;
-    param.modifiedOn = nsEditArticle.modifiedOn;
-
-    var destinationURL = "rest/article/sync"
-
-    var imageUrl = "<img src='images/busy_indicator.gif' alt='busy' style='width:16px; height:16px' />";
-
-    $('#saveIndicator').html(imageUrl);
-    $('#saveIndicator').show();
-
-    $.ajax({
-        url: destinationURL,
-        headers: { 'x-auth-token': sessionStorage.token },
-        type: 'POST',
-        data: param
-    }).done(function(data, status){
-        if (status == "nocontent"){
-            $('#saveIndicator').html("<span style='color:green;'>No update needed</span>").fadeOut(3000);
-        }
-        else if (status == "success"){
-            app.localdb.updateArticle(data, function(){
-                nsEditArticle.modifiedOn = data.modifiedOn;
-                 $("#contentArea").html(data.content);
-                if($("#contentArea").html() == ""){
-                    $("#contentArea").html("<p>a</p><p></p>");
-                }
-                $('#saveIndicator').html("<span style='color:green;'>Updated!</span>").fadeOut(3000);
-            })
-        }
-
-    });
-});
 
         $("#diaChangeHeight").dialog({
             autoOpen: false,
@@ -194,150 +161,175 @@ $("#btnGetLatest").click(function(){
 
                  });
 
-                 $(document).on("click", "#btnCancelImageDialog", function () {
+         $(document).on("click", "#btnCancelImageDialog", function () {
+             $("#dialogInsertImage").dialog('close');
+         });
+         $(document).on("click", "#btnInsertImage", function () {
+             var theFile = document.getElementById("fileUploader").files[0];
+             if (!theFile) return;
+             var formData = new FormData();
+             //		formData.append(theFile.name, theFile);
+             formData.append("fileUploader", theFile);
+
+             var request = new XMLHttpRequest();
+             request.open('POST', '/rest/file');
+             //      request.setRequestHeader("Content-Type", "multipart/form-data");
+             request.setRequestHeader("X-File-Name", theFile.name);
+             request.setRequestHeader("X-File-Size", theFile.size);
+             request.setRequestHeader("X-File-Type", theFile.type);
+             request.setRequestHeader("X-File-ArticleId", nsEditArticle.articleId);
+             request.setRequestHeader("x-auth-token", sessionStorage.token);
+
+             request.onreadystatechange = function () { // Simple event handler
+                 if (request.readyState === 4){
+                     //   alert(request.responseText);
+
+                     var range = $("#dialogInsertImage").data("range");
+                     var theId = request.responseText;
+                     var src = '/rest/file/unsecured/' + theId;
+                     insertImg(range, src, theId);
+
                      $("#dialogInsertImage").dialog('close');
-                 });
-                 $(document).on("click", "#btnInsertImage", function () {
-                     var theFile = document.getElementById("fileUploader").files[0];
-                     if (!theFile) return;
-                     var formData = new FormData();
-                     //		formData.append(theFile.name, theFile);
-                     formData.append("fileUploader", theFile);
+                 }
+             };
 
-                     var request = new XMLHttpRequest();
-                     request.open('POST', '/rest/file');
-                     //      request.setRequestHeader("Content-Type", "multipart/form-data");
-                     request.setRequestHeader("X-File-Name", theFile.name);
-                     request.setRequestHeader("X-File-Size", theFile.size);
-                     request.setRequestHeader("X-File-Type", theFile.type);
-                     request.setRequestHeader("X-File-ArticleId", nsEditArticle.articleId);
-                     request.setRequestHeader("x-auth-token", sessionStorage.token);
+             request.send(formData);
+         });
+         $(document).on('change', '#paragraph', function(){
+             var selectedVal = $('#paragraph').val();
+             switch (selectedVal){
+                 case 'heading1':
+                     ApplyBlockStyle('h1');
+                     break;
+                 case 'heading2':
+                     ApplyBlockStyle('h2');
+                     break;
+                 case 'heading3':
+                     ApplyBlockStyle('h3');
+                     break;
+                 case 'heading4':
+                     ApplyBlockStyle('h4');
+                     break;
+                 case 'normal':
+                     ApplyBlockStyle('p');
+                     break;
+             }
+             $('#paragraph').val('-');
+         });
 
-                     request.onreadystatechange = function () { // Simple event handler
-                         if (request.readyState === 4){
-                             //   alert(request.responseText);
+         $(document).on('change', '#coding', function(){
+             var selectedVal = $('#coding').val();
+             switch (selectedVal){
+                 case 'code':
+                     //	insertTag('code');
+                     formatCode('code');
+                     break;
+                 case 'badCode':
+                     insertTag('badCode');
+                     break;
+                 case 'script':
+                     insertTag('script');
+                     break;
+             }
+             $('#coding').val('-');
 
-                             var range = $("#dialogInsertImage").data("range");
-                             var theId = request.responseText;
-                             var src = '/rest/file/unsecured/' + theId;
-                             insertImg(range, src, theId);
+         });
 
-                             $("#dialogInsertImage").dialog('close');
+         $(document).on("click", "#btnSaveLocal", function(){
+            var imageUrl = "<img src='images/busy_indicator.gif' alt='busy' style='width:16px; height:16px' />";
+
+             $('#saveIndicator').html(imageUrl);
+             $('#saveIndicator').show();
+
+             app.localdb.getArticle(nsEditArticle.articleId, function(article){
+                 article.entity.content = $("#contentArea").html();
+                 article.entity.locallyModified = true;
+
+                 app.localdb.updateArticle(article.entity, function(){
+                    nsEditArticle.locallyModified = true;
+                     $('#saveIndicator').html("<span style='color:green;'>Saved</span>").fadeOut(3000);
+                 })
+             });
+         });
+
+         $(document).on("click", "#btnSaveContent", function(){
+            var url = "rest/article/content";
+             updateContent(url);
+         });
+
+         $(document).on("click", "#btnHTML", function(){
+             var theHtml = $("#contentArea").html().replace(/&lt;/g, '&amp;lt;').replace(/&gt;/g, '&amp;gt;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+             $("#contentArea").html(theHtml);
+         });
+         $(document).on("click", "#btnText", function(){
+             var theHtml = $("#contentArea").html().replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;lt;/g, '&lt;').replace(/&amp;gt;/g, '&gt;');
+             $("#contentArea").html(theHtml);
+         });
+         $(document).on("click", "#btnClear", function(){
+             if (confirm("All contents will be discarded, continue?"))
+                 $("#contentArea").html('<p>a</p><p></p>');
+         });
+         $(document).on("click", "#btnGetLatest", function(){
+            if (nsEditArticle.locallyModified == true){
+                alert("Contents have been modified locally. Push to server first.");
+                return;
+            }
+            var param = {};
+             param.articleId = nsEditArticle.articleId;
+             param.modifiedOn = nsEditArticle.modifiedOn;
+
+             var destinationURL = "rest/article/sync"
+
+             var imageUrl = "<img src='images/busy_indicator.gif' alt='busy' style='width:16px; height:16px' />";
+
+             $('#saveIndicator').html(imageUrl);
+             $('#saveIndicator').show();
+
+             $.ajax({
+                 url: destinationURL,
+                 headers: { 'x-auth-token': sessionStorage.token },
+                 type: 'POST',
+                 data: param
+             }).done(function(data, status){
+                 if (status == "nocontent"){
+                     $('#saveIndicator').html("<span style='color:green;'>No update needed</span>").fadeOut(3000);
+                 }
+                 else if (status == "success"){
+                     app.localdb.updateArticle(data, function(){
+                         nsEditArticle.modifiedOn = data.modifiedOn;
+                          $("#contentArea").html(data.content);
+                         if($("#contentArea").html() == ""){
+                             $("#contentArea").html("<p>a</p><p></p>");
                          }
-                     };
+                         $('#saveIndicator').html("<span style='color:green;'>Updated!</span>").fadeOut(3000);
+                     })
+                 }
 
-                     request.send(formData);
-                 });
-                 $(document).on('change', '#paragraph', function(){
-                     var selectedVal = $('#paragraph').val();
-                     switch (selectedVal){
-                         case 'heading1':
-                             ApplyBlockStyle('h1');
-                             break;
-                         case 'heading2':
-                             ApplyBlockStyle('h2');
-                             break;
-                         case 'heading3':
-                             ApplyBlockStyle('h3');
-                             break;
-                         case 'heading4':
-                             ApplyBlockStyle('h4');
-                             break;
-                         case 'normal':
-                             ApplyBlockStyle('p');
-                             break;
-                     }
-                     $('#paragraph').val('-');
-                 });
+             });
+         });
+         $(document).on("click", "#btnShowServerVersion", function(event){
+            event.preventDefault();
+            var newWindow = window.open("newWindow.html", "popupWindow", "width=1200,height=800,scrollbars=yes");
 
-                 $(document).on('change', '#coding', function(){
-                     var selectedVal = $('#coding').val();
-                     switch (selectedVal){
-                         case 'code':
-                             //	insertTag('code');
-                             formatCode('code');
-                             break;
-                         case 'badCode':
-                             insertTag('badCode');
-                             break;
-                         case 'script':
-                             insertTag('script');
-                             break;
-                     }
-                     $('#coding').val('-');
+            newWindow.onload = function(){
+                var url = "rest/article/" + nsEditArticle.articleId;
 
-                 });
-                 $(document).on("click", "#btnSaveContent", function(){
-                     var imageUrl = "<img src='images/busy_indicator.gif' alt='busy' style='width:16px; height:16px' />";
+                $.ajax({
+                    url: url,
+                    headers: { 'x-auth-token': sessionStorage.token },
+                    type: 'GET'
+                }).done(function(data){
+                    newWindow.dataFromServer = data.content;
+                    newWindow.init();
+                });
+            };
+         });
+         $(document).on("click", "#btnForceUpdate", function(event){
+            var url = "rest/article/content?forceupdate=true";
+            updateContent(url);
 
-                     $('#saveIndicator').html(imageUrl);
-                     $('#saveIndicator').show();
-
-                     var para = {};
-                     para.id = nsEditArticle.articleId;
-                     para.content = $("#contentArea").html();
-                     para.modifiedOn = nsEditArticle.modifiedOn;
-
-                     $.ajax({
-                         type: "PUT",
-                         url: "rest/article/content",
-                         headers: { 'x-auth-token': sessionStorage.token },
-                         data: JSON.stringify(para),
-
-                         contentType: "application/json",
-                         success: function (response, status, xhr) {
-                             console.log(response);
-                             console.log(status);
-                             if (status == "success"){
-                                 para.modifiedOn = response;
-                                app.localdb.getArticle(nsEditArticle.articleId, function(article){
-
-                                });
-                                 $('#saveIndicator').html("<span style='color:green;'>Saved</span>").fadeOut(3000);
-                             }
-
-                         },
-                         error: function (xhr, error) {
-                             $('#saveIndicator').html("<span style='color:red;'>Saving Failed</span>" + xhr.responseText);
-                         }
-                     });
-                 });
-
-                 $(document).on("click", "#btnHTML", function(){
-                     var theHtml = $("#contentArea").html().replace(/&lt;/g, '&amp;lt;').replace(/&gt;/g, '&amp;gt;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                     $("#contentArea").html(theHtml);
-                 });
-                 $(document).on("click", "#btnText", function(){
-                     var theHtml = $("#contentArea").html().replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;lt;/g, '&lt;').replace(/&amp;gt;/g, '&gt;');
-                     $("#contentArea").html(theHtml);
-                 });
-                 $(document).on("click", "#btnClear", function(){
-                     if (confirm("All contents will be discarded, continue?"))
-                         $("#contentArea").html('<p>a</p><p></p>');
-                 });
-                 $(document).on("click", "#btnShowServerVersion", function(event){
-                    event.preventDefault();
-                    var newWindow = window.open("newWindow.html", "popupWindow", "width=1200,height=800,scrollbars=yes");
-
-                    newWindow.onload = function(){
-                        var url = "rest/article/" + nsEditArticle.articleId;
-
-                        $.ajax({
-                            url: url,
-                            headers: { 'x-auth-token': sessionStorage.token },
-                            type: 'GET'
-                        }).done(function(data){
-                            newWindow.dataFromServer = data.content;
-                            newWindow.init();
-                        });
-
-
-                    };
-
-
-
-                 });
-         }
+         });
+     }
     function replaceSelectedText(replacementText) {
         var sel, range;
         if (window.getSelection) {
@@ -352,7 +344,51 @@ $("#btnGetLatest").click(function(){
             range.text = replacementText;
         }
     }
+    function updateContent(url){
+        var imageUrl = "<img src='images/busy_indicator.gif' alt='busy' style='width:16px; height:16px' />";
 
+         $('#saveIndicator').html(imageUrl);
+         $('#saveIndicator').show();
+
+         var para = {};
+         para.id = nsEditArticle.articleId;
+         para.content = $("#contentArea").html();
+         para.modifiedOn = nsEditArticle.modifiedOn;
+
+         $.ajax({
+             type: "PUT",
+             url: url,
+             headers: { 'x-auth-token': sessionStorage.token },
+             data: JSON.stringify(para),
+
+             contentType: "application/json",
+             success: function (response, status, xhr) {
+                 console.log(response);
+                 console.log(status);
+                 if (status == "success"){
+                    app.localdb.getArticle(nsEditArticle.articleId, function(article){
+                        article.entity.modifiedOn = response;
+                        article.entity.locallyModified = false;
+                        nsEditArticle.modifiedOn = response;
+                        nsEditArticle.locallyModified = false;
+                        app.localdb.updateArticle(article.entity, function(){
+                            $('#saveIndicator').html("<span style='color:green;'>Saved</span>").fadeOut(3000);
+                        })
+                    });
+                 }
+                 else if (status == "nocontent"){
+                    $('#saveIndicator').html("<span style='color:red;'>version conflict</span>").fadeOut(3000);
+                 }
+                 else{
+                    alert("status: " + status);
+                 }
+
+             },
+             error: function (xhr, error) {
+                 $('#saveIndicator').html("<span style='color:red;'>Saving Failed</span>" + xhr.responseText);
+             }
+         });
+    }
     function btnShowHeightDialog_Click(){
         // get current height value
         $("input#tbxNewHeight", "#diaChangeHeight").val($("#contentArea").css("max-height"));

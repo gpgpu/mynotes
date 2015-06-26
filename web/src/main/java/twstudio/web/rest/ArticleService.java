@@ -42,7 +42,14 @@ public class ArticleService {
     @PUT
     @Path("content")
     @Produces("application/json")
-    public Response saveContent(Article article){
+    public Response saveContent(Article article, @DefaultValue("false") @QueryParam("forceupdate") String forceupdate){
+        System.out.println(forceupdate);
+        if (forceupdate == "true"){
+            Date newModifiedOn = new Date();
+            article.setModifiedOn(newModifiedOn);
+            articleRepo.saveContent(article);
+            return Response.status(Response.Status.OK).entity(newModifiedOn).build();
+        }
         // check if there are updates after the record was retrieved.
         Article serverVersion = articleRepo.getArticle(article.getId());
 
@@ -80,7 +87,6 @@ public class ArticleService {
         System.out.println("serverModifiedOn:" + serverTotalSeconds);
 
         boolean hasNewVersion = serverTotalSeconds > modifiedOn;
-
 
 
        if (hasNewVersion)

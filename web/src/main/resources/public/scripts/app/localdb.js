@@ -74,8 +74,7 @@ app.status = {
      */
     var getArticle = function (id, callback) {
         console.log("getArticle");
-        if (typeof readonlyStore == 'undefined')
-            readonlyStore = getObjectStore(DB_STORE_NAME, 'readonly');
+        var readonlyStore = getObjectStore(DB_STORE_NAME, 'readonly');
 
         var req = readonlyStore.get(id);
 
