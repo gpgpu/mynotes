@@ -36,22 +36,27 @@ public class ArticleService {
     @PUT
     @Path("title")
     public String updateTitle(Article article){
-        // add timestamp
-        article.setModifiedOn(new Date());
-
-        // check if there are updates after the record was retrieved.
-        Article serverVersion = articleRepo.getArticle(article.getId());
-
-
-
         articleRepo.updateTitle(article);
         return "OK";
     }
     @PUT
     @Path("content")
-    public String saveContent(Article article){
+    @Produces("application/json")
+    public Response saveContent(Article article){
+        // check if there are updates after the record was retrieved.
+        Article serverVersion = articleRepo.getArticle(article.getId());
+
+        long clientTimeStamp = article.getModifiedOn().getTime();
+        long serverTimeStamp = serverVersion.getModifiedOn().getTime();
+        System.out.println("client: server timestamp: "  + clientTimeStamp + " : " + serverTimeStamp);
+        if (serverTimeStamp > clientTimeStamp)
+            return Response.status(Response.Status.NO_CONTENT).build();
+
+        // if no conflict, then set new timestamp and update
+        Date newModifiedOn = new Date();
+        article.setModifiedOn(newModifiedOn);
         articleRepo.saveContent(article);
-        return "OK";
+        return Response.status(Response.Status.OK).entity(newModifiedOn).build();
     }
 
     @PUT

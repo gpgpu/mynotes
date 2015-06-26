@@ -286,7 +286,16 @@ $("#btnGetLatest").click(function(){
 
                          contentType: "application/json",
                          success: function (response, status, xhr) {
-                             $('#saveIndicator').html("<span style='color:green;'>Saved</span>").fadeOut(3000);
+                             console.log(response);
+                             console.log(status);
+                             if (status == "success"){
+                                 para.modifiedOn = response;
+                                app.localdb.getArticle(nsEditArticle.articleId, function(article){
+
+                                });
+                                 $('#saveIndicator').html("<span style='color:green;'>Saved</span>").fadeOut(3000);
+                             }
+
                          },
                          error: function (xhr, error) {
                              $('#saveIndicator').html("<span style='color:red;'>Saving Failed</span>" + xhr.responseText);
