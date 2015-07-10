@@ -26,8 +26,9 @@ function formatCode(codeStyle){
 	var sel = window.getSelection();;
 	var range = sel.getRangeAt(0);
 	var contents = sel.toString().replace(/</g, '&lt;').replace(/>/g, '&gt;');
-	console.log(contents);
+//	console.log(contents);
 	var theElement = document.createElement("pre");
+	theElement.className=codeStyle;
 	theElement.innerHTML = contents;
 	range.deleteContents();
 	range.insertNode(theElement);

@@ -19,7 +19,7 @@ public class RefbookRequestFilter implements ContainerRequestFilter {
 	@Override
 	public void filter(ContainerRequestContext requestContext)
 			throws IOException {
-		if (requestContext.getRequest().getMethod().equals("OPTIONS")){
+		if (requestContext.getMethod().equals("OPTIONS")){
 			requestContext.abortWith(Response.status(Response.Status.OK)
 					.build());
 			return;
@@ -28,7 +28,8 @@ public class RefbookRequestFilter implements ContainerRequestFilter {
 		Authenticator authenticator = Authenticator.getInstance();
 		String path = requestContext.getUriInfo().getPath();
 		
-		// for any request beside login, token must be verified
+		// token must be verified unless excluded explicitly.
+		// todo: decouple exclusion list
 		if (path.endsWith("login")) return;
 		if (path.contains("unsecured")) return;		
 			String token = requestContext.getHeaderString(RefbookHttpHeaderNames.AUTH_TOKEN);
