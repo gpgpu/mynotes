@@ -225,10 +225,10 @@ var httpConfig = {headers:{
                      formatCode('code');
                      break;
                  case 'badCode':
-                     insertTag('badCode');
+                     formatCode('badCode');
                      break;
                  case 'script':
-                     insertTag('script');
+                     formatCode('script');
                      break;
              }
              $('#coding').val('-');

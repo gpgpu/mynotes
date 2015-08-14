@@ -138,6 +138,29 @@ app.status = {
         };
      };
 
+     var updateArticleTitle = function(article, callback){
+        var readWriteStore = getObjectStore(DB_STORE_NAME, 'readwrite');
+        var req = readWriteStore.get(article.id);
+
+                req.onerror = function(event){
+                    console.log("couldn't find the record in localdb");
+                };
+                req.onsuccess = function(event){
+                    var dbRecord = req.result;
+
+                    dbRecord.name = article.name;
+
+                    var reqUpdate = readWriteStore.put(dbRecord);
+                    reqUpdate.onerror = function(event){
+                        console.log("could not update record");
+                    };
+                    reqUpdate.onsuccess = function(event){
+                        console.log("record updated");
+                        callback();
+                    };
+                };
+     };
+
     /**
      * @param {string} biblioid
      */
@@ -204,7 +227,8 @@ app.status = {
         openDb: openDb,
         getArticle: getArticle,
         addArticle: addArticle,
-        updateArticle: updateArticle
+        updateArticle: updateArticle,
+        updateArticleTitle: updateArticleTitle
     }
 
 })(); // Immediately-Invoked Function Expression (IIFE)
