@@ -2,11 +2,12 @@ allprojects{
     group = 'org.twstudio'
     version = '0.1-SNAPSHOT'
 
+    apply plugin: 'java'
     apply plugin: 'idea'
 }
 
 subprojects{
-    apply plugin: 'java'
+
 
     sourceCompatibility=1.8
     targetCompatibility=1.8
@@ -17,10 +18,38 @@ subprojects{
     }
 }
 
+configurations{
+    sshAntTask
+}
+dependencies{
+    sshAntTask 'org.apache.ant:ant-jsch:1.9.2'
+}
+repositories{
+    mavenCentral()
+}
 
+
+task uploadToProd(dependsOn: ':web:distZip') {
+    doLast {
+        def privateKey = file('/Users/taowang/.ssh/id_rsa')
+
+        ant.taskdef(
+                name: 'scp',
+                classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+                classpath: configurations.sshAntTask.asPath
+        )
+
+        ant.scp(
+                file: file("web/build/distributions/web-" + version + ".zip"),
+                todir: "root@107.170.134.195:/srv",
+                keyfile: privateKey,
+                trust: true
+        )
+    }
+}
 
 task wrapper(type: Wrapper){
-    gradleVersion='2.4'
+    gradleVersion='2.7'
 }
 
 task run(dependsOn: ':web:bootRun'){
