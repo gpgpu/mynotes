@@ -329,6 +329,22 @@ var httpConfig = {headers:{
             updateContent(url);
 
          });
+         $(document).on("click", "#btnRemoveNewlines", function(event){
+            var sel = window.getSelection();;
+            	var range = sel.getRangeAt(0);
+            	var contents = sel.toString();
+
+
+            	var purgedContent = removeNewlineChars(contents)
+
+            	var theElement = document.createElement("p");
+                	theElement.innerHTML = purgedContent;
+                	range.deleteContents();
+                	range.insertNode(theElement);
+                	sel.removeAllRanges();
+                	sel.addRange(range);
+
+         });
      }
     function replaceSelectedText(replacementText) {
         var sel, range;
