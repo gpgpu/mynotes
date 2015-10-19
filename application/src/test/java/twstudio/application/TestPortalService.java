@@ -3,13 +3,12 @@ package twstudio.application;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import twstudio.domain.ArticleRepo;
-import twstudio.domain.Portal;
-import twstudio.domain.PortalRepo;
-import twstudio.domain.TopicRepo;
+import twstudio.domain.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -36,19 +35,79 @@ public class TestPortalService {
 
 
     @Test
-    public void testStub(){
+    public void putArticles(){
+        Map<Integer, Topic> topicTree = new HashMap<Integer, Topic>();
 
-        ArrayList<Portal> portals = new ArrayList<Portal>();
-        Portal portal = new Portal();
- //       portal.setId(1);
+        Topic topic1 = new Topic();
+        topic1.setId(1);
 
-        portals.add(portal);
+        Topic topic2 = new Topic();
+        topic2.setId(2);
 
-        when(portalRepo.getPortals()).thenReturn(portals);
+        topicTree.put(topic1.getId(), topic1);
+        topicTree.put(topic2.getId(), topic2);
 
-        List<Portal> result = portalService.getTopics();
+        List<Article> articles = new ArrayList<>();
+        Article article1 = new Article();
+        article1.setTopicId(1);
+        article1.setId(1);
+        Article article2 = new Article();
+        article2.setTopicId(1);
+        article2.setId(2);
+        Article article3 = new Article();
+        article3.setTopicId(2);
+        article3.setId(3);
 
-        assertThat(result.size(), equalTo(0));
+        articles.add(article1);
+        articles.add(article2);
+        articles.add(article3);
 
+        // act
+        portalService.putArticlesIntoHierarchy(topicTree, articles);
+
+        // assert
+        assertEquals(2, topicTree.size());
+        assertEquals(2, topicTree.get(1).getArticles().size());
+        assertEquals(1, topic2.getArticles().size());
     }
+
+    @Test
+    public void putTopics(){
+        Map<Integer, Topic> topicTree = new HashMap<Integer, Topic>();
+
+        Topic topic1 = new Topic();
+        topic1.setId(1);
+
+        Topic topic2 = new Topic();
+        topic2.setId(2);
+
+        topicTree.put(topic1.getId(), topic1);
+        topicTree.put(topic2.getId(), topic2);
+
+        List<Article> articles = new ArrayList<>();
+        Article article1 = new Article();
+        article1.setTopicId(1);
+        article1.setId(1);
+        Article article2 = new Article();
+        article2.setTopicId(1);
+        article2.setId(2);
+        Article article3 = new Article();
+        article3.setTopicId(2);
+        article3.setId(3);
+
+        articles.add(article1);
+        articles.add(article2);
+        articles.add(article3);
+
+        // act
+        portalService.putArticlesIntoHierarchy(topicTree, articles);
+
+        // assert
+        assertEquals(2, topicTree.size());
+        assertEquals(2, topicTree.get(1).getArticles().size());
+        assertEquals(1, topic2.getArticles().size());
+    }
+
+
+
 }

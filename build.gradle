@@ -16,6 +16,8 @@ subprojects{
         mavenLocal()
         mavenCentral()
     }
+
+
 }
 
 configurations{

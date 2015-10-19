@@ -32,27 +32,30 @@ public class PortalService {
         Map<Integer, Portal> portalMap = new HashMap<Integer, Portal>();
         Map<Integer, Topic> topicMap = new HashMap<Integer, Topic>();
 
-        for (Portal portal : portals){
-            portalMap.put(portal.getId(), portal);
-        }
-        for (Topic topic : topics){
-            topicMap.put(topic.getId(), topic);
-        }
+        putTopicsIntoHierarchy(portalMap, topicMap, topics);
+        putArticlesIntoHierarchy(topicMap, articles);
 
-        for (Topic topic : topics){
-            if (topic.getParentTopicId() == 0){
-                portalMap.get(topic.getPortalId()).getTopics().add(topic);
-            }
-            else{
-                topicMap.get(topic.getParentTopicId()).getTopics().add(topic);
-            }
-        }
-
-        for (Article article : articles){
-            topicMap.get(article.getTopicId()).getArticles().add(article);
-        }
         return portals;
     }
+
+    public void putTopicsIntoHierarchy(Map<Integer, Portal> portalTree, Map<Integer, Topic> topicTree, List<Topic> topics){
+        for (Topic topic : topics){
+            if (topic.getParentTopicId() == 0){
+                portalTree.get(topic.getPortalId()).getTopics().add(topic);
+            }
+            else{
+                topicTree.get(topic.getParentTopicId()).getTopics().add(topic);
+            }
+        }
+    }
+
+    public void putArticlesIntoHierarchy(Map<Integer, Topic> topicTree, List<Article> articles){
+        for (Article article : articles){
+            topicTree.get(article.getTopicId()).getArticles().add(article);
+        }
+    }
+
+
 
 
 }
