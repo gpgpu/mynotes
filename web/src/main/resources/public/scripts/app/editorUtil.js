@@ -25,9 +25,16 @@ function editStyle(cmd) {
 function formatCode(codeStyle){
 	var sel = window.getSelection();;
 	var range = sel.getRangeAt(0);
-	var contents = sel.toString().replace(/</g, '&lt;').replace(/>/g, '&gt;');
-	console.log(contents);
+	var contents = sel.toString();
+
+//	var transformed = contents.split('').map(char => char.charCodeAt());
+//	console.log(transformed);
+	contents = contents.replace(/\n\n/g, '\n');
+	contents = contents.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+//	console.log(contents);
 	var theElement = document.createElement("pre");
+	theElement.className=codeStyle;
 	theElement.innerHTML = contents;
 	range.deleteContents();
 	range.insertNode(theElement);
@@ -142,3 +149,7 @@ function isBlockNode(node){
 
     return name == "P" || name == "DIV" || name == "BODY" || name == "H1" || name == "H2" || name == "H3" || name == "PRE";
 };
+
+function removeNewlineChars(stringBlock){
+    return stringBlock.replace(/\n/g, ' ');
+}

@@ -1,1 +1,1 @@
-include 'domain', 'infrastructure', 'web'
+include 'domain', 'infrastructure', 'web', 'application', 'oauth'

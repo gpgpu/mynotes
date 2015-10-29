@@ -225,10 +225,10 @@ var httpConfig = {headers:{
                      formatCode('code');
                      break;
                  case 'badCode':
-                     insertTag('badCode');
+                     formatCode('badCode');
                      break;
                  case 'script':
-                     insertTag('script');
+                     formatCode('script');
                      break;
              }
              $('#coding').val('-');
@@ -327,6 +327,22 @@ var httpConfig = {headers:{
          $(document).on("click", "#btnForceUpdate", function(event){
             var url = "rest/article/content?forceupdate=true";
             updateContent(url);
+
+         });
+         $(document).on("click", "#btnRemoveNewlines", function(event){
+            var sel = window.getSelection();;
+            	var range = sel.getRangeAt(0);
+            	var contents = sel.toString();
+
+
+            	var purgedContent = removeNewlineChars(contents)
+
+            	var theElement = document.createElement("p");
+                	theElement.innerHTML = purgedContent;
+                	range.deleteContents();
+                	range.insertNode(theElement);
+                	sel.removeAllRanges();
+                	sel.addRange(range);
 
          });
      }

@@ -441,9 +441,7 @@ function manager($scope, $http, $timeout, $window) {
         };
         $scope.saveRename = function () {
             var para = {};
-           // para.itemType = $scope.originalRightItem.itemType;
-           // para.itemId = $scope.originalRightItem.id;
-           // para.newTitle = $scope.itemToBeEdited;
+
             para.id = $scope.originalRightItem.id;
             para.name = $scope.itemToBeEdited;
             
@@ -455,6 +453,14 @@ function manager($scope, $http, $timeout, $window) {
             else if ($scope.originalRightItem.itemType == enumItemType.article){
             	$http.put('rest/article/title', para, httpConfig).success(function () {
             		$scope.afterTitleChange();
+
+
+
+            		app.localdb.openDb(function(db){
+            		    app.localdb.updateArticleTitle(para, function(){
+            		        console.log("title updated");
+            		    });
+            		});
             	});	
             }
             
