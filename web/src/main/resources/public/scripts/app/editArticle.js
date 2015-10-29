@@ -374,7 +374,7 @@ var httpConfig = {headers:{
                         nsEditArticle.locallyModified = false;
                         app.localdb.updateArticle(article.entity, function(){
                             $('#saveIndicator').html("<span style='color:green;'>Saved</span>").fadeOut(3000);
-                        })
+                        });
                     });
                  }
                  else if (status == "nocontent"){
