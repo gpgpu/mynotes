@@ -1,8 +1,6 @@
 var nsEditArticle = nsEditArticle || {};
 
 
-
-
 nsEditArticle.articleId = window.opener.targetArticleId;
 nsEditArticle.isLocalNew = false;
 nsEditArticle.modifiedOn;

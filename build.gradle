@@ -33,7 +33,7 @@ repositories{
 
 task uploadToProd(dependsOn: ':web:distZip') {
     doLast {
-        def privateKey = file('/Users/taowang/.ssh/id_rsa')
+        def privateKey = file('C:\\Users\\Tao\\.ssh\\id_rsa')
 
         ant.taskdef(
                 name: 'scp',

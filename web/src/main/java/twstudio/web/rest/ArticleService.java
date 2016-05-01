@@ -9,16 +9,14 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.log4j.spi.LoggerFactory;
 
-import org.eclipse.jetty.util.log.Log;
 import twstudio.domain.Article;
 import twstudio.domain.ArticleRepo;
 
 @Path("article")
 public class ArticleService {
     @Inject ArticleRepo articleRepo;
-    private Logger logger = Logger.getLogger("ha");
+
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
