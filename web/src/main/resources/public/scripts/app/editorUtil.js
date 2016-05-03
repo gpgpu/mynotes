@@ -151,5 +151,5 @@ function isBlockNode(node){
 };
 
 function removeNewlineChars(stringBlock){
-    return stringBlock.replace(/\n/g, ' ');
+    return stringBlock.replace(/\n/g, ' ').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }

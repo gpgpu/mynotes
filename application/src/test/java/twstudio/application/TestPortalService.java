@@ -84,7 +84,7 @@ public class TestPortalService {
         topicTree.put(topic1.getId(), topic1);
         topicTree.put(topic2.getId(), topic2);
 
-        List<Article> articles = new ArrayList<>();
+        List<Article> articles = new ArrayList<Article>();
         Article article1 = new Article();
         article1.setTopicId(1);
         article1.setId(1);
@@ -107,7 +107,4 @@ public class TestPortalService {
         assertEquals(2, topicTree.get(1).getArticles().size());
         assertEquals(1, topic2.getArticles().size());
     }
-
-
-
 }

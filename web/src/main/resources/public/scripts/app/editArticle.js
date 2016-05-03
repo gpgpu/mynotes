@@ -1,8 +1,6 @@
 var nsEditArticle = nsEditArticle || {};
 
 
-
-
 nsEditArticle.articleId = window.opener.targetArticleId;
 nsEditArticle.isLocalNew = false;
 nsEditArticle.modifiedOn;
@@ -235,22 +233,7 @@ var httpConfig = {headers:{
 
          });
 
-         $(document).on("click", "#btnSaveLocal", function(){
-            var imageUrl = "<img src='images/busy_indicator.gif' alt='busy' style='width:16px; height:16px' />";
-
-             $('#saveIndicator').html(imageUrl);
-             $('#saveIndicator').show();
-
-             app.localdb.getArticle(nsEditArticle.articleId, function(article){
-                 article.entity.content = $("#contentArea").html();
-                 article.entity.locallyModified = true;
-
-                 app.localdb.updateArticle(article.entity, function(){
-                    nsEditArticle.locallyModified = true;
-                     $('#saveIndicator').html("<span style='color:green;'>Saved</span>").fadeOut(3000);
-                 })
-             });
-         });
+         $(document).on("click", "#btnSaveLocal", saveContentToLocaldb);
 
          $(document).on("click", "#btnSaveContent", function(){
             var url = "rest/article/content";
@@ -359,6 +342,22 @@ var httpConfig = {headers:{
             range = document.selection.createRange();
             range.text = replacementText;
         }
+    }
+    function saveContentToLocaldb(){
+        var imageUrl = "<img src='images/busy_indicator.gif' alt='busy' style='width:16px; height:16px' />";
+
+        $('#saveIndicator').html(imageUrl);
+        $('#saveIndicator').show();
+
+        app.localdb.getArticle(nsEditArticle.articleId, function(article){
+            article.entity.content = $("#contentArea").html();
+            article.entity.locallyModified = true;
+
+            app.localdb.updateArticle(article.entity, function(){
+                nsEditArticle.locallyModified = true;
+                $('#saveIndicator').html("<span style='color:green;'>Saved</span>").fadeOut(3000);
+            })
+        });
     }
     function updateContent(url){
         var imageUrl = "<img src='images/busy_indicator.gif' alt='busy' style='width:16px; height:16px' />";
