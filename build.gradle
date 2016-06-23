@@ -52,7 +52,7 @@ task uploadToProd(dependsOn: ':web:distZip') {
 }
 
 task wrapper(type: Wrapper){
-    gradleVersion='2.7'
+    gradleVersion='2.14'
 }
 
 task run(dependsOn: ':web:bootRun'){

@@ -31,6 +31,7 @@ function formatCode(codeStyle){
 //	console.log(transformed);
 	contents = contents.replace(/\n\n/g, '\n');
 	contents = contents.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    contents = contents.trim();
 
 //	console.log(contents);
 	var theElement = document.createElement("pre");
