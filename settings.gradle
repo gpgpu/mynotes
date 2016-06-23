@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 include 'domain', 'infrastructure', 'web', 'application', 'oauth', 'clientApp'
+=======
+include 'domain', 'infrastructure', 'web', 'application', 'oauth', 'clientApp'
+>>>>>>> 2dd2609e6908ff659228fa64fd7a61265e90c8f1

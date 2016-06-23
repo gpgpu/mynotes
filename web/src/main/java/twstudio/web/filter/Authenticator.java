@@ -17,7 +17,7 @@ public class Authenticator {
     private static Authenticator authenticator = null;
     private final Map<String, String> userLookups = new HashMap<String, String>();
     private final Cache<String, String> tokenLookups = CacheBuilder.newBuilder()
-            .expireAfterAccess(8, TimeUnit.HOURS)
+            .expireAfterAccess(48, TimeUnit.HOURS)
             .build();
 
 
